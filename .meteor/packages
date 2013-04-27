@@ -8,3 +8,6 @@ insecure
 preserve-inputs
 jquery
 less
+accounts-base
+accounts-password
+accounts-ui

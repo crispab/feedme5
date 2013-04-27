@@ -2,9 +2,12 @@
 
 (function () {
 	"use strict";
-		
+
 	Session.set("mode", "shoppingList");
 
+	Template.shoppingList.userLoggedIn = function () {
+		return !!Meteor.userId();
+	};
 	Template.shoppingList.adminMode = function () {
 		return Session.get("mode") === "admin";
 	};
