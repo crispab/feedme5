@@ -9,7 +9,7 @@
 		'keypress input': function (e, t) {
 			if (e.keyCode === 13) {
 				var input = t.find('input');
-				List.insert({name: input.value});
+				List.insert({name: input.value, owner: Meteor.userId()});
 				input.value = '';
 			}
 		}
@@ -38,7 +38,6 @@
 	Template.storeView.stores = Template.shoppingView.stores = function () {
 		return Stores.find();
 	};
-	
 
 	Template.storeView.storeName = function() {
 		return Session.get("storeName");
@@ -48,12 +47,12 @@
 		'keypress input': function (e, t) {
 			if (e.keyCode === 13) {
 				var input = t.find('input');
-				Stores.insert({name: input.value});
+				Stores.insert({name: input.value, owner: Meteor.userId()});
 				input.value = '';
 			}
 		}
 	});
-	
+
 	Template.storeList.events({
 		'click .name': function (e, t) {
 			Session.set("store", t.data._id);
