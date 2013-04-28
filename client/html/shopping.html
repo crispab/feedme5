@@ -9,6 +9,7 @@
 
 		<section class="listItems">
 			{{#if viewing}}
+				<a href="#" data-clear="true">clear</a>
 				<a href="#" data-editMode="true" class="editMode">click to edit</a>
 				<ul>
 				{{#each list}}
@@ -16,6 +17,7 @@
 				{{/each}}
 				</ul>
 			{{else}}
+				<input type="checkbox" name="check-all" {{#if somethingIncluded}}checked="checked"{{/if}}>
 				<a href="#" data-editMode="true" class="editMode">done</a>
 				<ul class="editing">
 				{{#each editList}}
