@@ -41,14 +41,24 @@
 
 	Template.storeView.storeName = function() {
 		return Session.get("storeName");
-	}
+	};
+
+	var setDefaultSortingForStore = function(storeId) {
+		var index = 0, setInfo = {};
+		List.find({}, {sort: {name:1}}).forEach(function(list) {
+			setInfo[storeId] = index;
+			List.update({_id: list._id}, {$set: setInfo});
+			index += 1;
+		});
+	};
 
 	Template.storeView.events({
 		'keypress input': function (e, t) {
 			if (e.keyCode === 13) {
 				var input = t.find('input');
-				Stores.insert({name: input.value, owner: Meteor.userId()});
+				var storeId = Stores.insert({name: input.value, owner: Meteor.userId()});
 				input.value = '';
+				setDefaultSortingForStore(storeId);
 			}
 		}
 	});
@@ -74,7 +84,6 @@
 		return id === this._id;
 	};
 
-	
 	Template.storeView.rendered = function () {
 		$('ul[data-sortable="true"]').sortable({stop: function (event, ui) {
 			var setInfo = {};
@@ -87,8 +96,8 @@
 
 	Template.storeView.storeSet = function () {
 		return !!Session.get("store");
-	}
-	
+	};
+
 	Template.storeView.list = function () {
 		var store = Session.get("store"), sortInfo = {};
 		if( store ) {
