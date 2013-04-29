@@ -9,7 +9,7 @@
 
 	Session.set("viewing", true);
 
-	Template.shoppingView.viewing = function () {
+	Template.shoppingView.viewing = Template.stores.viewing = function () {
 		return Session.get("viewing");
 	};
 
@@ -29,6 +29,30 @@
 		});
 		return result;
 	};
+
+	Template.stores.stores = function () {
+		return Stores.find();
+	};
+
+	var setDefaultSortingForStore = function(storeId) {
+		var index = 0, setInfo = {};
+		List.find({}, {sort: {name:1}}).forEach(function(list) {
+			setInfo[storeId] = index;
+			List.update({_id: list._id}, {$set: setInfo});
+			index += 1;
+		});
+	};
+
+	Template.stores.events({
+		'keypress input': function (e, t) {
+			if (e.keyCode === 13) {
+				var input = t.find('input');
+				var storeId = Stores.insert({name: input.value, owner: Meteor.userId()});
+				input.value = '';
+				setDefaultSortingForStore(storeId);
+			}
+		}
+	});
 
 	Template.viewShoppingItem.showChecked = function() {
 		var showChecked = Session.get('show-checked');
@@ -64,24 +88,18 @@
 		}
 	});
 
-	Template.shoppingView.editList = function () {
-		var store = Session.get("shopByStore"), sortInfo = {}, sort = {};
-		if (store) {
-			sortInfo[store] = 1;
-			sort = {sort: sortInfo};
-		}
-		return List.find({}, sort);
-	};
-
-	Template.editShoppingItem.events({
-		'click input[type=checkbox], click .name': function (e, t) {
-			List.update({_id: t.data._id}, {$set: {included: t.data.included ? false : true}});
-		}
-	});
-
 	Template.shopByStore.events({
 		'click .name': function (e, t) {
 			Session.set("shopByStore", t.data._id);
+		},
+		'click .del': function (e, t) {
+			var id = t.data._id;
+			Stores.remove({_id: id});
+			List.find().forEach(function(list) {
+				var unsetInfo = {};
+				unsetInfo[id] = '';
+				List.update({_id: list._id}, {$unset: unsetInfo});
+			});
 		}
 	});
 

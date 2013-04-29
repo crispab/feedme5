@@ -10,18 +10,7 @@
 
 <template name="shoppingList">
 	{{#if userLoggedIn}}
-		<nav class="main-nav">
-			{{#if adminMode}}
-				<a href="#" id="shoppingList">Shopping List</a>
-			{{else}}
-				<a href="#" id="admin">Admin</a>
-			{{/if}}
-		</nav>
 		<h1>FeedMe</h1>
-		{{#if adminMode}}
-			{{> adminView}}
-		{{else}}
-			{{> shoppingView}}
-		{{/if}}
+		{{> shoppingView}}
 	{{/if}}
 </template>
