@@ -21,13 +21,23 @@
 				var input = t.find('input[type=text]');
 				var o = {name: input.value, owner: Meteor.userId()};
 				Stores.find().forEach(function(store) {
-					o[store._id] = -1;
+					o[store._id] = findLowestSortOrder(store._id) - 1;
 				});
 				List.insert(o);
 				input.value = '';
 			}
 		}
 	});
+
+	var findLowestSortOrder = function(storeId) {
+		var result = Number.MAX_VALUE;
+		List.find().forEach(function(item) {
+			if (item[storeId] < result) {
+				result = item[storeId];
+			}
+		});
+		return result;
+	};
 
 	Template.editShoppingList.rendered = function () {
 		$('ul[data-sortable="true"]').sortable({stop: function (event, ui) {
