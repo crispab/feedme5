@@ -4,7 +4,11 @@
 	"use strict";
 	Template.editShoppingList.list = function () {
 		var store = Session.get("shopByStore"), sortInfo = {}, sort = {};
-		if (store) {
+
+		if (Session.get('alpha-sort')) {
+			sortInfo['name'] = 1;
+			sort = {sort: sortInfo};
+		} else if (store) {
 			sortInfo[store] = 1;
 			sort = {sort: sortInfo};
 		}
@@ -47,8 +51,8 @@
 				List.update({_id: $(item).attr('data-id')}, {$set: setInfo});
 			});
 		}});
+		$('ul[data-sortable="false"]:data(uiSortable)').sortable('destroy');
 	};
-
 
 	Template.editShoppingItem.events({
 		'click input[type=checkbox], click .name': function (e, t) {

@@ -5,6 +5,8 @@
 	Meteor.startup(function () {
 		Deps.autorun(Template.shoppingView.list);
 		Session.set('show-checked', true);
+		Session.set('alpha-sort', true);
+		Session.set('shopByStore', undefined);
 	});
 
 	Session.set("viewing", true);
@@ -15,10 +17,14 @@
 
 	Template.shoppingView.list = function () {
 		var store = Session.get("shopByStore"), sortInfo = {}, sort = {};
-		if (store) {
+		
+		if (Session.get('alpha-sort')) {
+			sortInfo['name'] = 1;
+			sort = {sort: sortInfo};
+		} else if (store) {
 			sortInfo[store] = 1;
 			sort = {sort: sortInfo};
-		}
+		} 
 		return List.find({included: true}, sort);
 	};
 
@@ -32,6 +38,10 @@
 
 	Template.stores.stores = function () {
 		return Stores.find();
+	};
+
+	Template.stores.alphaSort = function () {
+		return Session.get("alpha-sort");
 	};
 
 	var setDefaultSortingForStore = function(storeId) {
@@ -51,7 +61,13 @@
 				input.value = '';
 				setDefaultSortingForStore(storeId);
 			}
-		}
+		},
+		'click [data-alpha-sort="true"]': function (e, t) {
+			Session.set('shopByStore', undefined);
+			Session.set('alpha-sort', true);
+			e.preventDefault();
+		},
+
 	});
 
 	Template.viewShoppingItem.showChecked = function() {
@@ -90,6 +106,7 @@
 
 	Template.shopByStore.events({
 		'click .name': function (e, t) {
+			Session.set("alpha-sort", false);
 			Session.set("shopByStore", t.data._id);
 		},
 		'click .del': function (e, t) {

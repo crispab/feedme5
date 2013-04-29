@@ -1,7 +1,7 @@
 <template name="editShoppingList">
 	<input type="checkbox" name="check-all" {{#if somethingIncluded}}checked="checked"{{/if}}>
 	<input type="text" placeholder="add item"/>
-	<ul class="editing list" {{#if storeSet}}data-sortable="true"{{/if}}>
+	<ul class="editing list" {{#if storeSet}}data-sortable="true"{{else}}data-sortable="false"{{/if}}>
 	{{#each list}}
 		{{> editShoppingItem}}
 	{{/each}}

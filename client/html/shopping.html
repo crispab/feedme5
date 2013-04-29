@@ -32,7 +32,8 @@
 	<menu class="button-nav {{#if viewing}}viewing{{/if}}">
 		{{#each stores}}
 			{{> shopByStore}}
-		{{/each}}
+		{{/each}} 
+		| <li onclick="void(0)" data-alpha-sort="true" {{#if alphaSort}}class="selected"{{/if}}>by name</li>
 	</menu>
 
 </template>
