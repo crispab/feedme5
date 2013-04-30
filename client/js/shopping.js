@@ -66,8 +66,7 @@
 			Session.set('shopByStore', undefined);
 			Session.set('alpha-sort', true);
 			e.preventDefault();
-		},
-
+		}
 	});
 
 	Template.viewShoppingItem.showChecked = function() {
@@ -78,7 +77,7 @@
 	Template.shoppingView.events({
 		'click a[data-clear="true"]': function (e, t) {
 			List.find().forEach(function(list) {
-				List.update({_id: list._id}, {$set: {checked: false}});
+				List.update({_id: list._id}, {$set: {checked: false, extra: ''}});
 			});
 			e.preventDefault();
 		},

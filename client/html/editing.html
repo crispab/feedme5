@@ -16,6 +16,15 @@
 		{{else}}
 			<span onclick="void(0)" class="name">{{name}}</span>
 		{{/if}}
+		{{#if editingExtra}}
+			<input type="text" name="extra" value="{{extra}}"/>
+		{{else}}
+			{{#if hasExtra}}
+				| <span onclick="void(0)" class="extra">{{extra}}</span>
+			{{else}}
+				<span onclick="void(0)" class="extra">[+]</span>
+			{{/if}}
+		{{/if}}
 		<span onclick="void(0)" class="del">[del]</span>
 	</li>
 </template>

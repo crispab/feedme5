@@ -41,13 +41,14 @@
 <template name="shopByStore">
 	<li onclick="void(0)" class="name {{#if selected}}selected{{/if}}">
 		<span>{{name}}</span>
-		<a href="#" class="del">X</a></li>
+		<a href="#" class="del">X</a>
+	</li>
 </template>
 
 <template name="viewShoppingItem">
 	{{#if showChecked}}
 		<li onclick="void(0)" class="name">
-			<span {{#if checked}}class="checked"{{/if}} >{{name}}</span>
+			<span {{#if checked}}class="checked"{{/if}} >{{name}}{{#if extra}} | {{extra}}{{/if}}</span>
 		</li>
 	{{/if}}
 </template>

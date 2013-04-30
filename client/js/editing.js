@@ -56,11 +56,15 @@
 		if (input) {
 			input.focus();
 		}
+		var inputExtra = this.find('input[name=extra]');
+		if (inputExtra) {
+			inputExtra.focus();
+		}
 	};
 
 	Template.editShoppingItem.events({
 		'click li': function (e, t) {
-			if (!Session.get('edit-' + this._id)) {
+			if (!Session.get('edit-' + this._id) && !Session.get('edit-extra-' + this._id)) {
 				List.update({_id: t.data._id}, {$set: {included: t.data.included ? false : true}});
 			}
 		},
@@ -70,14 +74,36 @@
 			}
 			Session.set('edit-' + t.data._id, true);
 			Session.set('current-edit', t.data._id);
+			if (Session.get('current-edit-extra')) {
+				Session.set('edit-extra-' + Session.get('current-edit-extra'), false);
+			}
+			e.stopPropagation();
+		},
+		'click .extra': function (e, t) {
+			if (Session.get('current-edit-extra')) {
+				Session.set('edit-extra-' + Session.get('current-edit-extra'), false);
+			}
+			Session.set('edit-extra-' + t.data._id, true);
+			Session.set('current-edit-extra', t.data._id);
+			if (Session.get('current-edit')) {
+				Session.set('edit-' + Session.get('current-edit'), false);
+			}
+			e.stopPropagation();
 		},
 		'click .del': function (e, t) {
 			List.remove({_id: t.data._id});
+			e.stopPropagation();
 		},
 		'keypress input[name=name]': function(e, t) {
 			if (e.keyCode === 13) {
 				List.update({_id: t.data._id}, {$set: {name: e.currentTarget.value}});
 				Session.set('edit-' + t.data._id, false);
+			}
+		},
+		'keypress input[name=extra]': function(e, t) {
+			if (e.keyCode === 13) {
+				List.update({_id: t.data._id}, {$set: {extra: e.currentTarget.value}});
+				Session.set('edit-extra-' + t.data._id, false);
 			}
 		}
 	});
@@ -85,4 +111,14 @@
 	Template.editShoppingItem.editing = function() {
 		return Session.get('edit-' + this._id);
 	};
+
+	Template.editShoppingItem.editingExtra = function() {
+		return Session.get('edit-extra-' + this._id);
+	};
+
+	Template.editShoppingItem.hasExtra = function() {
+		var list = List.findOne({_id:this._id});
+		return list.extra;
+	};
+
 })();
