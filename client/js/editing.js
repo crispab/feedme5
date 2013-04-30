@@ -20,7 +20,7 @@
 	};
 
 	Template.editShoppingList.events({
-		'keypress input': function (e, t) {
+		'keypress input[name=add]': function (e, t) {
 			if (e.keyCode === 13) {
 				var input = t.find('input[type=text]');
 				var o = {name: input.value, owner: Meteor.userId()};
@@ -52,14 +52,37 @@
 			});
 		}});
 		$('ul[data-sortable="false"]:data(uiSortable)').sortable('destroy');
+		var input = this.find('input[name=name]');
+		if (input) {
+			input.focus();
+		}
 	};
 
 	Template.editShoppingItem.events({
-		'click input[type=checkbox], click .name': function (e, t) {
-			List.update({_id: t.data._id}, {$set: {included: t.data.included ? false : true}});
+		'click li': function (e, t) {
+			if (!Session.get('edit-' + this._id)) {
+				List.update({_id: t.data._id}, {$set: {included: t.data.included ? false : true}});
+			}
+		},
+		'click .name': function (e, t) {
+			if (Session.get('current-edit')) {
+				Session.set('edit-' + Session.get('current-edit'), false);
+			}
+			Session.set('edit-' + t.data._id, true);
+			Session.set('current-edit', t.data._id);
 		},
 		'click .del': function (e, t) {
 			List.remove({_id: t.data._id});
+		},
+		'keypress input[name=name]': function(e, t) {
+			if (e.keyCode === 13) {
+				List.update({_id: t.data._id}, {$set: {name: e.currentTarget.value}});
+				Session.set('edit-' + t.data._id, false);
+			}
 		}
 	});
-}());
+
+	Template.editShoppingItem.editing = function() {
+		return Session.get('edit-' + this._id);
+	};
+})();
