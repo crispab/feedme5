@@ -3,26 +3,27 @@
 (function () {
 	"use strict";
 	Template.editShoppingList.list = function () {
-		var store = Session.get("shopByStore"), sortInfo = {}, sort = {};
+		var store = Session.get("shopByStore"), sortInfo = {}, sort = {}, query = {}, selectedLetter;
 
 		if (Session.get('alpha-sort')) {
+			selectedLetter = Session.get('selectedLetter');
+			if (selectedLetter) {
+				query = {$where: function() { return this.name.substr(0, 1) === selectedLetter; }};
+			}
 			sortInfo['name'] = 1;
 			sort = {sort: sortInfo};
 		} else if (store) {
 			sortInfo[store] = 1;
 			sort = {sort: sortInfo};
 		}
-		return List.find({}, sort);
+		return List.find(query, sort);
 	};
 
 	Template.editShoppingList.somethingIncluded = function () {
-		console.log('somethingIncluded');
 		var result = false;
 		List.find().forEach(function(list) {
-			console.log('somethingIncluded loop', result);
 			result = result || list.included;
 		});
-		console.log('somethingIncluded return', result);
 		return result;
 	};
 

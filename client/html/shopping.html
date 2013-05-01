@@ -35,7 +35,25 @@
 		{{/each}} 
 		| <li onclick="void(0)" data-alpha-sort="true" {{#if alphaSort}}class="selected"{{/if}}>by name</li>
 	</menu>
+	{{#if alphaSort}}
+		{{> showLettersView}}
+	{{/if}}
+</template>
 
+<template name="showLettersView">
+	<nav class="letter-nav">
+		<ul>
+			{{#each letters}}
+				{{> showLetter}}
+			{{/each}}
+		</ul>
+	</nav>
+</template>
+
+<template name="showLetter">
+	<li onclick="void(0)">
+		<a href="{{letter}}" class="letter{{#if selected}} selected{{/if}}">{{letter}}</a>
+	</li>
 </template>
 
 <template name="shopByStore">

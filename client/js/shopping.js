@@ -15,17 +15,22 @@
 		return Session.get("viewing");
 	};
 
+	// TODO: This method is nearly identical to Template.editShoppingList.list. Must consolidate.
 	Template.shoppingView.list = function () {
-		var store = Session.get("shopByStore"), sortInfo = {}, sort = {};
+		var store = Session.get("shopByStore"), sortInfo = {}, sort = {}, query = {included: true}, selectedLetter;
 
 		if (Session.get('alpha-sort')) {
+			selectedLetter = Session.get('selectedLetter');
+			if (selectedLetter) {
+				query.$where = function() { return this.name.substr(0, 1) === selectedLetter; };
+			}
 			sortInfo['name'] = 1;
 			sort = {sort: sortInfo};
 		} else if (store) {
 			sortInfo[store] = 1;
 			sort = {sort: sortInfo};
 		}
-		return List.find({included: true}, sort);
+		return List.find(query, sort);
 	};
 
 	Template.stores.stores = function () {
@@ -122,5 +127,24 @@
 		var id = Session.get('shopByStore');
 		return id === this._id;
 	};
+
+	Template.showLettersView.letters = function() {
+		var result = {letters:[{letter:'all', selected: !Session.get('selectedLetter')}]};
+		List.find({}, {sort: {name:1}}).forEach(function(item) {
+			var letter = item.name.substr(0, 1);
+			if (!result[letter]) {
+				result[letter] = true;
+				result.letters.push({letter:letter, selected: Session.get('selectedLetter') === letter});
+			}
+		});
+		return result.letters;
+	};
+
+	Template.showLetter.events({
+		'click .letter': function (e, t) {
+			Session.set('selectedLetter', t.data.letter === 'all' ? undefined : t.data.letter);
+			e.preventDefault();
+		}
+	});
 
 }());
