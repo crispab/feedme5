@@ -87,11 +87,11 @@
 		$('input[name=add]').autocomplete({
 			autoFocus: true,
 			source: g.List.find().fetch().map(function(item) {
-				return {label: item.name, _id:item._id, included: item.included};
+				return {label: item.name, _id:item._id};
 			}),
 			select: function(event, ui) {
 				event.preventDefault();
-				g.List.update({_id: ui.item._id}, {$set: {included: ui.item.included ? false : true}});
+				g.List.update({_id: ui.item._id}, {$set: {included: true}});
 				this.value = '';
 				this.focus();
 			}
