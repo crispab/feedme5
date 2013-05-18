@@ -4,6 +4,11 @@
 
 	var $ = g.jQuery;
 
+	g.Meteor.startup(function () {
+		g.Deps.autorun(g.Template.viewShoppingList.list);
+		g.Session.set('show-all', true);
+	});
+
 	g.Template.editShoppingList.list = function () {
 		var store = g.Session.get("shopByStore"), sortInfo = {}, sort = {}, query = {}, selectedLetter, alphaSort = g.Session.get('alpha-sort');
 
@@ -24,6 +29,11 @@
 			return;
 		}
 		return result;
+	};
+
+	g.Template.editShoppingList.toggleLabel = function() {
+		var showAll = g.Session.get('show-all');
+		return showAll ? 'hide' : 'show';
 	};
 
 	g.Template.editShoppingList.somethingIncluded = function () {
@@ -52,6 +62,10 @@
 					input.value = '';
 				}
 			}
+		},
+		'click a[data-toggle="true"]': function (e) {
+			g.Session.set('show-all', !g.Session.get('show-all'));
+			e.preventDefault();
 		}
 	});
 
@@ -154,6 +168,11 @@
 			}
 		}
 	});
+
+	g.Template.editShoppingItem.showItem = function() {
+		var showAll = g.Session.get('show-all');
+		return this.included || showAll;
+	};
 
 	g.Template.editShoppingItem.editing = function() {
 		return g.Session.get('edit-' + this._id);
