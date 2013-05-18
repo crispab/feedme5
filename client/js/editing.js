@@ -6,7 +6,7 @@
 
 	g.Meteor.startup(function () {
 		g.Deps.autorun(g.Template.viewShoppingList.list);
-		g.Session.set('show-all', true);
+		g.Session.set('show', 'all');
 	});
 
 	g.Template.editShoppingList.list = function () {
@@ -31,9 +31,13 @@
 		return result;
 	};
 
+	// all -> included
+	// included -> excluded
+	// excluded -> all
 	g.Template.editShoppingList.toggleLabel = function() {
-		var showAll = g.Session.get('show-all');
-		return showAll ? 'hide' : 'show';
+		var show = g.Session.get('show');
+		return !show || show === 'all' ? 'included' :
+			show === 'included' ? 'excluded' : 'all';
 	};
 
 	g.Template.editShoppingList.somethingIncluded = function () {
@@ -64,7 +68,13 @@
 			}
 		},
 		'click a[data-toggle="true"]': function (e) {
-			g.Session.set('show-all', !g.Session.get('show-all'));
+			var current = g.Session.get('show'), newVal = 'all';
+			if (!current || current === 'all') {
+				newVal = 'included';
+			} else if (current === 'included') {
+				newVal = 'excluded';
+			}
+			g.Session.set('show', newVal);
 			e.preventDefault();
 		}
 	});
@@ -170,8 +180,8 @@
 	});
 
 	g.Template.editShoppingItem.showItem = function() {
-		var showAll = g.Session.get('show-all');
-		return this.included || showAll;
+		var show = g.Session.get('show'), showAll = !show || show === 'all', showIncluded = show === 'included';
+		return this.included === showIncluded || showAll;
 	};
 
 	g.Template.editShoppingItem.editing = function() {
