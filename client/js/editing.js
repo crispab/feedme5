@@ -83,6 +83,20 @@
 			});
 		}});
 		$('ul[data-sortable="false"]:data(uiSortable)').sortable('destroy');
+
+		$('input[name=add]').autocomplete({
+			autoFocus: true,
+			source: g.List.find().fetch().map(function(item) {
+				return {label: item.name, _id:item._id, included: item.included};
+			}),
+			select: function(event, ui) {
+				event.preventDefault();
+				g.List.update({_id: ui.item._id}, {$set: {included: ui.item.included ? false : true}});
+				this.value = '';
+				this.focus();
+			}
+		});
+
 		var input = this.find('input[name=name]');
 		if (input) {
 			input.focus();
