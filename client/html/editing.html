@@ -2,7 +2,7 @@
 	<input type="checkbox" name="check-all" {{#if somethingIncluded}}checked="checked"{{/if}}>
 	<input type="text" name="add" placeholder="add item"/>
 	<a href="#" data-toggle="true">{{toggleLabel}}</a>
-	<ul class="editing list" {{#if storeSet}}data-sortable="true"{{else}}data-sortable="false"{{/if}}>
+	<ul class="editing list" {{#if canSort}}data-sortable="true"{{else}}data-sortable="false"{{/if}}>
 	{{#each list}}
 		{{> editShoppingItem}}
 	{{/each}}

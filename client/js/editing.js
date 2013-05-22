@@ -48,8 +48,9 @@
 		return result;
 	};
 
-	g.Template.editShoppingList.storeSet = function () {
-		return !!g.Session.get("shopByStore");
+	g.Template.editShoppingList.canSort = function () {
+		var show = g.Session.get('show');
+		return !!g.Session.get("shopByStore") && show === 'all';
 	};
 
 	g.Template.editShoppingList.events({
