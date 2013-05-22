@@ -252,7 +252,7 @@ nav ul {
 }
 
 .listItems {
-	margin: 10px 0;
+	margin: 0;
 	.selected {
 		color: black;	
 	}
@@ -281,8 +281,24 @@ nav ul {
 
 }
 
-.letter-nav .selected {
-	font-weight: bold;
+.letter-nav {
+	margin-bottom: 10px;
+	.selected {
+		font-weight: bold;
+	}
+}
+
+.filter-list {
+	margin: 5px 0;
+}
+
+.filter-element {
+	display: inline-block;
+	margin: 0 5px 0 0;
+
+	:hover {
+		background-color: @selected-row-color;
+	}
 }
 
 @media screen and (min-width: 660px) {

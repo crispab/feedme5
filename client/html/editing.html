@@ -1,12 +1,21 @@
 <template name="editShoppingList">
+	<ul class="filter-list">
+		<li class="filter-element"><input type="radio" id="filter-all" name="list-filter" value="all" {{#if filterSelected "all"}}checked="checked"{{/if}}/>
+		<label for="filter-all">all</label></li>
+		<li class="filter-element"><input type="radio" id="filter-included" name="list-filter" value="included" {{#if filterSelected "included"}}checked="checked"{{/if}}/>
+		<label for="filter-included">included</label></li>
+		<li class="filter-element"><input type="radio" id="filter-excluded" name="list-filter" value="excluded" {{#if filterSelected "excluded"}}checked="checked"{{/if}}/>
+		<label for="filter-excluded">excluded</label></li>
+	</ul>
 	<input type="checkbox" name="check-all" {{#if somethingIncluded}}checked="checked"{{/if}}>
 	<input type="text" name="add" placeholder="add item"/>
-	<a href="#" data-toggle="true">{{toggleLabel}}</a>
-	<ul class="editing list" {{#if canSort}}data-sortable="true"{{else}}data-sortable="false"{{/if}}>
-	{{#each list}}
-		{{> editShoppingItem}}
-	{{/each}}
-	</ul>
+	<section class="listItems">
+		<ul class="editing list" {{#if canSort}}data-sortable="true"{{else}}data-sortable="false"{{/if}}>
+		{{#each list}}
+			{{> editShoppingItem}}
+		{{/each}}
+		</ul>
+	</section>
 </template>
 
 <template name="editShoppingItem">

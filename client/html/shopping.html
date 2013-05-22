@@ -8,14 +8,11 @@
 		{{/if}}
 
 		{{> stores}}}
-		<section class="listItems">
-			{{#if viewing}}
-				{{> viewShoppingList}}
-			{{else}}
-				{{> editShoppingList}}
-			{{/if}}
-
-		</section>
+		{{#if viewing}}
+			{{> viewShoppingList}}
+		{{else}}
+			{{> editShoppingList}}
+		{{/if}}
 	</div>
 </template>
 
@@ -23,11 +20,13 @@
 	<a href="#" data-clear="true">clear</a> | 
 	<a href="#" data-toggle="true">{{toggleLabel}}</a>
 	<span class="notify right-align clear" data-counter="true">{{itemsToShopCount}}</span>
-	<ul class="list">
-	{{#each list}}
-		{{> viewShoppingItem}}
-	{{/each}}
-	</ul>
+	<section class="listItems">
+		<ul class="list">
+		{{#each list}}
+			{{> viewShoppingItem}}
+		{{/each}}
+		</ul>
+	</section>
 </template>
 
 <template name="stores">
