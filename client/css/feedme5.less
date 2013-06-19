@@ -70,12 +70,12 @@ ul {
 }
 
 /* variables */
-@main-theme-color: #5dc8cd;
-@main-background-color: #a1e3e6;
-@notification-color: #FF7673;
-@accent-color: #FF7673;
+@main-theme-color: #2A75A9;
+@main-background-color: lighten(@main-theme-color, 10%);
+@accent-color: #FF6A33;
+@notification-color: @accent-color;
 @secondary-background-color: #ffffff;
-@selected-row-color: lighten(@main-theme-color, 30%);
+@selected-row-color: lighten(@main-theme-color, 50%);
 @selected-color: @main-theme-color;
 @secondary-selected-color: @selected-row-color;
 @muted-color: #d3d3d3;
@@ -84,7 +84,7 @@ ul {
 
 @admin-color: lighten(@muted-color, 12%);
 
-@button-color: @main-theme-color;
+@button-color: lighten(@main-theme-color, 15%);
 @inactive-button-color: lighten(@button-color, 30%);
 @button-border: darken(@button-color, 10%);
 @separator: @muted-color;
@@ -96,7 +96,11 @@ ul {
 body {
 	font-family: arial, sans-serif;
 	font-size: 130%;
-	background-color: @main-background-color;
+	background-color: @secondary-background-color;
+}
+
+#login-buttons {
+	margin: 0 10px;
 }
 
 .section-heading {
@@ -130,7 +134,7 @@ body {
 }
 
 a:hover {
-	color: @selected-color;
+	color: @accent-color;
 }
 
 a {
@@ -179,7 +183,7 @@ input {
 	}
 
 	 .del:hover {
-		color: @secondary-selected-color;
+		color: @accent-color;
 	}
 }
 
@@ -196,8 +200,6 @@ nav.admin ul {
 }
 
 .main {
-	.rounded-corners;
-	border: 1px solid @inactive-color;
 	margin: 0;
 	background-color: @secondary-background-color;
 }
@@ -267,7 +269,7 @@ nav ul {
 		border-bottom: 1px solid @separator;
 	}
 
-	.listItems li:last-child{
+	li:last-child{
 		border-bottom: none;
 	}
 
@@ -297,14 +299,13 @@ nav ul {
 	margin: 0 5px 0 0;
 
 	:hover {
-		background-color: @selected-row-color;
+		color: @accent-color;
 	}
 }
 
 @media screen and (min-width: 660px) {
 	body {
-		max-width: 600px;
-		margin: 0px 30px;
+		margin: 0px auto;
 		position: relative;
 	}
 
@@ -315,6 +316,11 @@ nav ul {
 	.main {
 		margin-top: 20px;
 		margin-bottom: 20px;
+	}
+
+	.content {
+		max-width: 600px;
+		margin: 0px auto;	
 	}
 
 	.listItems li {
