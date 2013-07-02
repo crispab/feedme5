@@ -36,20 +36,18 @@
 		return currentFilter === filter;
 	};
 
-	g.Template.editShoppingList.somethingIncluded = function () {
-		var result = false;
-		g.List.find().forEach(function(list) {
-			result = result || list.included;
-		});
-		return result;
-	};
-
 	g.Template.editShoppingList.canSort = function () {
 		var filter = g.Session.get('filter');
 		return !!g.Session.get("shopByStore") && filter === 'all';
 	};
 
 	g.Template.editShoppingList.events({
+		'click a[data-clear="true"]': function (e) {
+			g.List.find().forEach(function(list) {
+				g.List.update({_id: list._id}, {$set: {included: false, checked: false, extra: ''}});
+			});
+			e.preventDefault();
+		},
 		'keypress input[name=add]': function (e, t) {
 			if (e.keyCode === 13) {
 				var input = t.find('input[type=text]');

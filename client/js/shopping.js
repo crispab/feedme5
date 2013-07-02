@@ -4,7 +4,7 @@
 
 	g.Meteor.startup(function () {
 		g.Deps.autorun(g.Template.viewShoppingList.list);
-		g.Session.set('show-checked', true);
+		g.Session.set('show-checked', false);
 		g.Session.set('alpha-sort', true);
 		g.Session.set('shopByStore', undefined);
 	});
@@ -80,12 +80,6 @@
 	};
 
 	g.Template.viewShoppingList.events({
-		'click a[data-clear="true"]': function (e) {
-			g.List.find().forEach(function(list) {
-				g.List.update({_id: list._id}, {$set: {checked: false, extra: ''}});
-			});
-			e.preventDefault();
-		},
 		'click a[data-toggle="true"]': function (e) {
 			g.Session.set('show-checked', !g.Session.get('show-checked'));
 			e.preventDefault();
@@ -101,12 +95,6 @@
 		'click a[data-editMode="true"]': function (e) {
 			g.Session.set("viewing", !g.Session.get("viewing"));
 			e.preventDefault();
-		},
-		'click input[name="check-all"]': function (e) {
-			var currentState = e.currentTarget.checked;
-			g.List.find().forEach(function(list) {
-				g.List.update({_id: list._id}, {$set: {included: !!currentState}});
-			});
 		}
 	});
 
