@@ -165,19 +165,34 @@
 		},
 		'keypress input[name=name]': function(e, t) {
 			if (e.keyCode === 13) {
-				if (e.currentTarget.value) {
-					g.List.update({_id: t.data._id}, {$set: {name: e.currentTarget.value}});
-				}
-				g.Session.set('edit-' + t.data._id, false);
+				saveItemInformation(e,t);
 			}
 		},
 		'keypress input[name=extra]': function(e, t) {
 			if (e.keyCode === 13) {
-				g.List.update({_id: t.data._id}, {$set: {extra: e.currentTarget.value}});
-				g.Session.set('edit-extra-' + t.data._id, false);
+				saveExtraItemInformation(e,t);
 			}
+		},
+		'blur input[name=name]': function(e, t) {
+			saveItemInformation(e,t);
+		},
+		'blur input[name=extra]': function(e, t) {
+			saveExtraItemInformation(e,t);
 		}
+
 	});
+
+	var saveItemInformation = function(e,t) {
+		if (e.currentTarget.value) {
+			g.List.update({_id: t.data._id}, {$set: {name: e.currentTarget.value}});
+		}
+		g.Session.set('edit-' + t.data._id, false);
+	};
+
+	var saveExtraItemInformation = function(e,t) {
+		g.List.update({_id: t.data._id}, {$set: {extra: e.currentTarget.value}});
+		g.Session.set('edit-extra-' + t.data._id, false);
+	};
 
 	g.Template.editShoppingItem.showItem = function() {
 		var filter = g.Session.get('filter'), 
