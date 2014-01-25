@@ -62,7 +62,7 @@
 				}
 			}
 		},
-		'click input[name=list-filter]': function (e,t) {
+		'click input[name=list-filter]': function (e) {
 			e.preventDefault();
 			var value = e.toElement.value;
 			g.Session.set('filter', value);
@@ -150,7 +150,10 @@
 			e.stopPropagation();
 		},
 		'click .del': function (e, t) {
-			g.List.remove({_id: t.data._id});
+			if (confirm('Delete item permanently?')) {
+				g.List.remove({_id: t.data._id});
+			}
+			e.preventDefault();
 			e.stopPropagation();
 		},
 		'keypress input[name=name]': function(e, t) {

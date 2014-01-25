@@ -111,12 +111,16 @@
 		},
 		'click .del': function (e, t) {
 			var id = t.data._id;
-			g.Stores.remove({_id: id});
-			g.List.find().forEach(function(list) {
-				var unsetInfo = {};
-				unsetInfo[id] = '';
-				g.List.update({_id: list._id}, {$unset: unsetInfo});
-			});
+			if (confirm('Delete store permanently?')) {
+				g.Stores.remove({_id: id});
+				g.List.find().forEach(function(list) {
+					var unsetInfo = {};
+					unsetInfo[id] = '';
+					g.List.update({_id: list._id}, {$unset: unsetInfo});
+				});
+			}
+			e.preventDefault();
+			e.stopPropagation();
 		}
 	});
 
