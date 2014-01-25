@@ -101,21 +101,14 @@
 		$('input[name=add]').autocomplete({
 			autoFocus: true,
 			source: function (request, response) {
-				var source = (g.List.find({}, {sort:{name:1}})).fetch().map(function (item) {
+				var data = (g.List.find({}, {sort:{name:1}})).fetch().map(function (item) {
 					return {label: item.name, _id: item._id}
 				});
-				var term = $.ui.autocomplete.escapeRegex(request.term)
-					, startsWithMatcher = new RegExp("^" + term, "i")
-					, startsWith = $.grep(source, function(value) {
-						return startsWithMatcher.test(value.label || value.value || value);
-					})
-					, containsMatcher = new RegExp(term, "i")
-					, contains = $.grep(source, function (value) {
-						return $.inArray(value, startsWith) < 0 &&
-							containsMatcher.test(value.label || value.value || value);
-					});
-
-				response(startsWith.concat(contains));
+				var results = jQuery.ui.autocomplete.filter(data, request.term);
+				results = results.sort(function (a, b) {
+					return a.label.toLowerCase().indexOf(request.term.toLowerCase()) - b.label.toLowerCase().indexOf(request.term.toLowerCase());
+				});
+				response(results);
 			},
 			select: function(event, ui) {
 				event.preventDefault();
