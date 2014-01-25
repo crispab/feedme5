@@ -1,21 +1,24 @@
-(function (g) {
+/* global Meteor, Deps, Template, Session, List, $, Stores, confirm */
+
+(function() {
 
 	"use strict";
 
-	var $ = g.jQuery;
-
-	g.Meteor.startup(function () {
-		g.Deps.autorun(g.Template.viewShoppingList.list);
-		g.Session.set('filter', 'all');
+	Meteor.startup(function() {
+		Deps.autorun(Template.viewShoppingList.list);
+		Session.set('filter', 'all');
 	});
 
-	g.Template.editShoppingList.list = function () {
-		var store = g.Session.get("shopByStore"), sortInfo = {}, sort = {}, query = {}, selectedLetter, alphaSort = g.Session.get('alpha-sort');
+	Template.editShoppingList.list = function() {
+
+		var store = Session.get("shopByStore"), sortInfo = {}, sort = {}, query = {}, selectedLetter, alphaSort = Session.get('alpha-sort');
 
 		if (alphaSort) {
-			selectedLetter = g.Session.get('selectedLetter');
+			selectedLetter = Session.get('selectedLetter');
 			if (selectedLetter) {
-				query = {$where: function() { return this.name.substr(0, 1) === selectedLetter; }};
+				query = {$where: function() {
+					return this.name.substr(0, 1) === selectedLetter;
+				}};
 			}
 			sortInfo.name = 1;
 			sort = {sort: sortInfo};
@@ -23,62 +26,62 @@
 			sortInfo[store] = 1;
 			sort = {sort: sortInfo};
 		}
-		var result = g.List.find(query, sort);
+		var result = List.find(query, sort);
 		if (alphaSort && result.fetch().length === 0) {
-			g.Session.set('selectedLetter', undefined);
+			Session.set('selectedLetter', undefined);
 			return;
 		}
 		return result;
 	};
 
-	g.Template.editShoppingList.filterSelected = function(filter) {
-		var currentFilter = g.Session.get('filter');
+	Template.editShoppingList.filterSelected = function(filter) {
+		var currentFilter = Session.get('filter');
 		return currentFilter === filter;
 	};
 
-	g.Template.editShoppingList.canSort = function () {
-		var filter = g.Session.get('filter');
-		return !!g.Session.get("shopByStore") && filter === 'all';
+	Template.editShoppingList.canSort = function() {
+		var filter = Session.get('filter');
+		return !!Session.get("shopByStore") && filter === 'all';
 	};
 
-	g.Template.editShoppingList.events({
-		'click a[data-clear="true"]': function (e) {
-			g.List.find().forEach(function(list) {
-				g.List.update({_id: list._id}, {$set: {included: false, checked: false, extra: ''}});
+	Template.editShoppingList.events({
+		'click a[data-clear="true"]': function(e) {
+			List.find().forEach(function(list) {
+				List.update({_id: list._id}, {$set: {included: false, checked: false, extra: ''}});
 			});
 			e.preventDefault();
 		},
-		'keypress input[name=add]': function (e, t) {
+		'keypress input[name=add]': function(e, t) {
 			if (e.keyCode === 13) {
 				var input = t.find('input[type=text]');
 				if (input.value) {
-					var o = {name: input.value, owner: g.Meteor.userId(), included:true};
-					g.Stores.find().forEach(function(store) {
+					var o = {name: input.value, owner: Meteor.userId(), included: true};
+					Stores.find().forEach(function(store) {
 						o[store._id] = findLowestSortOrder(store._id) - 1;
 					});
-					g.List.insert(o);
+					List.insert(o);
 					checkFirstLetterOfInsertedItem(input.value);
 					input.value = '';
 				}
 			}
 		},
-		'click input[name=list-filter]': function (e) {
+		'click input[name=list-filter]': function(e) {
 			e.preventDefault();
 			var value = e.toElement.value;
-			g.Session.set('filter', value);
+			Session.set('filter', value);
 		}
 	});
 
 	var checkFirstLetterOfInsertedItem = function(item) {
 		var letter = item.substr(0, 1);
-		if (g.Session.get('selectedLetter')) {
-			g.Session.set('selectedLetter', letter);
+		if (Session.get('selectedLetter')) {
+			Session.set('selectedLetter', letter);
 		}
 	};
 
 	var findLowestSortOrder = function(storeId) {
 		var result = Number.MAX_VALUE;
-		g.List.find().forEach(function(item) {
+		List.find().forEach(function(item) {
 			if (item[storeId] < result) {
 				result = item[storeId];
 			}
@@ -86,13 +89,13 @@
 		return result;
 	};
 
-	g.Template.editShoppingList.rendered = function () {
-		$('ul[data-sortable="true"]').sortable({stop: function (event, ui) {
-			g.Deps.nonreactive(function() {
+	Template.editShoppingList.rendered = function() {
+		$('ul[data-sortable="true"]').sortable({stop: function(event, ui) {
+			Deps.nonreactive(function() {
 				var setInfo = {};
-				$(ui.item).parent().find('li').each(function (index, item) {
-					setInfo[g.Session.get("shopByStore")] = index;
-					g.List.update({_id: $(item).attr('data-id')}, {$set: setInfo});
+				$(ui.item).parent().find('li').each(function(index, item) {
+					setInfo[Session.get("shopByStore")] = index;
+					List.update({_id: $(item).attr('data-id')}, {$set: setInfo});
 				});
 			});
 		}});
@@ -100,19 +103,19 @@
 
 		$('input[name=add]').autocomplete({
 			autoFocus: true,
-			source: function (request, response) {
-				var data = (g.List.find({}, {sort:{name:1}})).fetch().map(function (item) {
-					return {label: item.name, _id: item._id}
+			source: function(request, response) {
+				var data = (List.find({}, {sort: {name: 1}})).fetch().map(function(item) {
+					return {label: item.name, _id: item._id};
 				});
-				var results = jQuery.ui.autocomplete.filter(data, request.term);
-				results = results.sort(function (a, b) {
+				var results = $.ui.autocomplete.filter(data, request.term);
+				results = results.sort(function(a, b) {
 					return a.label.toLowerCase().indexOf(request.term.toLowerCase()) - b.label.toLowerCase().indexOf(request.term.toLowerCase());
 				});
 				response(results);
 			},
 			select: function(event, ui) {
 				event.preventDefault();
-				g.List.update({_id: ui.item._id}, {$set: {included: true}});
+				List.update({_id: ui.item._id}, {$set: {included: true}});
 				this.value = '';
 				this.focus();
 			}
@@ -128,90 +131,89 @@
 		}
 	};
 
-	g.Template.editShoppingItem.events({
-		'click li': function (e, t) {
-			if (!g.Session.get('edit-' + this._id) && !g.Session.get('edit-extra-' + this._id)) {
-				g.List.update({_id: t.data._id}, {$set: {included: t.data.included ? false : true}});
+	Template.editShoppingItem.events({
+		'click li': function(e, t) {
+			if (!Session.get('edit-' + this._id) && !Session.get('edit-extra-' + this._id)) {
+				List.update({_id: t.data._id}, {$set: {included: t.data.included ? false : true}});
 			}
 		},
-		'click .name': function (e, t) {
-			if (g.Session.get('current-edit')) {
-				g.Session.set('edit-' + g.Session.get('current-edit'), false);
+		'click .name': function(e, t) {
+			if (Session.get('current-edit')) {
+				Session.set('edit-' + Session.get('current-edit'), false);
 			}
-			g.Session.set('edit-' + t.data._id, true);
-			g.Session.set('current-edit', t.data._id);
-			if (g.Session.get('current-edit-extra')) {
-				g.Session.set('edit-extra-' + g.Session.get('current-edit-extra'), false);
+			Session.set('edit-' + t.data._id, true);
+			Session.set('current-edit', t.data._id);
+			if (Session.get('current-edit-extra')) {
+				Session.set('edit-extra-' + Session.get('current-edit-extra'), false);
 			}
 			e.stopPropagation();
 		},
-		'click .extra': function (e, t) {
-			if (g.Session.get('current-edit-extra')) {
-				g.Session.set('edit-extra-' + g.Session.get('current-edit-extra'), false);
+		'click .extra': function(e, t) {
+			if (Session.get('current-edit-extra')) {
+				Session.set('edit-extra-' + Session.get('current-edit-extra'), false);
 			}
-			g.Session.set('edit-extra-' + t.data._id, true);
-			g.Session.set('current-edit-extra', t.data._id);
-			if (g.Session.get('current-edit')) {
-				g.Session.set('edit-' + g.Session.get('current-edit'), false);
+			Session.set('edit-extra-' + t.data._id, true);
+			Session.set('current-edit-extra', t.data._id);
+			if (Session.get('current-edit')) {
+				Session.set('edit-' + Session.get('current-edit'), false);
 			}
 			e.stopPropagation();
 		},
-		'click .del': function (e, t) {
+		'click .del': function(e, t) {
 			if (confirm('Delete item permanently?')) {
-				g.List.remove({_id: t.data._id});
+				List.remove({_id: t.data._id});
 			}
 			e.preventDefault();
 			e.stopPropagation();
 		},
 		'keypress input[name=name]': function(e, t) {
 			if (e.keyCode === 13) {
-				saveItemInformation(e,t);
+				saveItemInformation(e, t);
 			}
 		},
 		'keypress input[name=extra]': function(e, t) {
 			if (e.keyCode === 13) {
-				saveExtraItemInformation(e,t);
+				saveExtraItemInformation(e, t);
 			}
 		},
 		'blur input[name=name]': function(e, t) {
-			saveItemInformation(e,t);
+			saveItemInformation(e, t);
 		},
 		'blur input[name=extra]': function(e, t) {
-			saveExtraItemInformation(e,t);
+			saveExtraItemInformation(e, t);
 		}
 
 	});
 
-	var saveItemInformation = function(e,t) {
+	var saveItemInformation = function(e, t) {
 		if (e.currentTarget.value) {
-			g.List.update({_id: t.data._id}, {$set: {name: e.currentTarget.value}});
+			List.update({_id: t.data._id}, {$set: {name: e.currentTarget.value}});
 		}
-		g.Session.set('edit-' + t.data._id, false);
+		Session.set('edit-' + t.data._id, false);
 	};
 
-	var saveExtraItemInformation = function(e,t) {
-		g.List.update({_id: t.data._id}, {$set: {extra: e.currentTarget.value}});
-		g.Session.set('edit-extra-' + t.data._id, false);
+	var saveExtraItemInformation = function(e, t) {
+		List.update({_id: t.data._id}, {$set: {extra: e.currentTarget.value}});
+		Session.set('edit-extra-' + t.data._id, false);
 	};
 
-	g.Template.editShoppingItem.showItem = function() {
-		var filter = g.Session.get('filter'), 
-			showAll = !filter || filter === 'all', 
+	Template.editShoppingItem.showItem = function() {
+		var filter = Session.get('filter'),
+			showAll = !filter || filter === 'all',
 			showIncluded = filter === 'included';
 		return this.included === showIncluded || showAll;
 	};
 
-	g.Template.editShoppingItem.editing = function() {
-		return g.Session.get('edit-' + this._id);
+	Template.editShoppingItem.editing = function() {
+		return Session.get('edit-' + this._id);
 	};
 
-	g.Template.editShoppingItem.editingExtra = function() {
-		return g.Session.get('edit-extra-' + this._id);
+	Template.editShoppingItem.editingExtra = function() {
+		return Session.get('edit-extra-' + this._id);
 	};
 
-	g.Template.editShoppingItem.hasExtra = function() {
-		var list = g.List.findOne({_id:this._id});
+	Template.editShoppingItem.hasExtra = function() {
+		var list = List.findOne({_id: this._id});
 		return list && !!list.extra;
 	};
-
-})(this);
+})();

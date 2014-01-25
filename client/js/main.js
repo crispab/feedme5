@@ -1,7 +1,9 @@
-(function (g) {
+/*global Meteor, Template */
+
+(function () {
 	"use strict";
 
-	g.Template.shoppingList.userLoggedIn = function () {
-		return !!g.Meteor.userId();
+	Template.shoppingList.userLoggedIn = function () {
+		return !!Meteor.userId();
 	};
-})(this);
+})();
