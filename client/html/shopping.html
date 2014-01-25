@@ -30,7 +30,7 @@
 
 <template name="stores">
 	{{#unless viewing}}
-		<input type="text" placeholder="add store"/>
+		<input autocorrect="off" autocapitalize="none" type="text" placeholder="add store"/>
 	{{/unless}}
 	<menu class="button-nav {{#if viewing}}viewing{{/if}}">
 		{{#each stores}}
